@@ -174,9 +174,8 @@ SHAP values are used to understand *why* the model's accuracy behaves the way it
 
 ## Author
 
-**Mohammad Ayesha Summaiyya**
-📧 msumaiya03579@gmail.com
-
+**Vadlamudi Kavya Sudha**
+📧 Kavyasudha1104@gmail.com
 ## License
 
 This project is released under the [MIT License](LICENSE). If you use this dataset, code, or findings, please cite the manuscript/repository above.
