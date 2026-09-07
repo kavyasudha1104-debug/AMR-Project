@@ -4,7 +4,7 @@
 [![XGBoost](https://img.shields.io/badge/Model-XGBoost-brightgreen)](https://xgboost.readthedocs.io/)
 [![SHAP](https://img.shields.io/badge/Interpretability-SHAP-orange)](https://shap.readthedocs.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-Pre--print%20in%20preparation-lightgrey)]()
+[![Status](https://img.shields.io/badge/Status-Pre--print%20in%20preparation-lightgrey)]() 
 
 > **TL;DR** — Reported accuracy for ML models predicting antimicrobial resistance (AMR) phenotypes depends heavily on *how* the train/test split is constructed. Under naive random splitting we get ~82% accuracy. Once genome- and species-level leakage is removed, accuracy collapses to near chance (~44%) for unseen species. This repository contains the full, reproducible pipeline behind that finding.
 
