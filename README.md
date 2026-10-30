@@ -1,38 +1,60 @@
 # Apparent Performance of Antimicrobial Resistance Phenotype Prediction Depends on the Definition of an Unseen Observation
 
-Most machine-learning studies of antimicrobial resistance (AMR) evaluate their models by splitting rows at random into training and test sets. That keeps individual rows apart, but it does nothing to stop the same species, antibiotic, species–antibiotic pairing, or genome from turning up on both sides of the split.
+Most machine-learning studies of antimicrobial resistance (AMR) evaluate their models by splitting rows at random into training and test sets. This separates individual observations, but does not necessarily prevent the same species, antibiotic, species–antibiotic pairing, or genome from appearing in both sets.
 
-This project measures how much that choice actually matters.
+This project investigates how the definition of unseen data affects the measured performance of machine-learning models for antimicrobial resistance phenotype prediction.
 
 ## Overview
 
-Using a genome-level AMR dataset from [BV-BRC](https://www.bv-brc.org/) containing 801 labelled observations spanning 5 species, 41 genomes, 46 antibiotics, and 82 species–antibiotic combinations, four classifiers were evaluated under four different definitions of unseen data.
+The analysis uses a genome-level AMR dataset compiled from [BV-BRC](https://www.bv-brc.org/), containing:
 
-The models used were **logistic regression, random forest, gradient boosting, and XGBoost**.
+- 801 labelled observations
+- 5 bacterial species
+- 41 genomes
+- 46 antibiotics
+- 82 species–antibiotic combinations
+
+Four classifiers were evaluated:
+
+- Logistic Regression
+- Random Forest
+- Gradient Boosting
+- XGBoost
+
+## Evaluation Regimes
+
+Four evaluation strategies were used to examine how model performance changes depending on what is held out during testing.
 
 | Evaluation regime | What's held out |
 |---|---|
-| Random row-level split | Individual rows |
+| Random row-level split | Individual observations |
 | Unseen Species–Antibiotic | Species–antibiotic combinations |
 | Unseen Genome | Individual genomes |
 | Leave-One-Species-Out | Entire species |
 
 ## Key Findings
 
-Accuracy is not a fixed property of a model. It can change substantially depending on what is held out during evaluation.
+The results demonstrate that measured prediction accuracy depends on the evaluation strategy and the biological relationships represented in the training and test sets.
 
-- **0.824 accuracy** under random row-level splitting.
-- **0.628 accuracy** when species–antibiotic combinations are held out, a decrease of 19.6 percentage points.
-- **0.824 accuracy** when individual genomes are held out, showing that holding out genomes does not necessarily eliminate overlap in species–antibiotic relationships.
-- **0.406 pooled out-of-fold accuracy** under leave-one-species-out evaluation, reported as indistinguishable from a permutation-shuffled null (P = 1.000).
+| Evaluation regime | Accuracy |
+|---|---:|
+| Random row-level split | 0.824 |
+| Unseen species–antibiotic combinations | 0.628 |
+| Unseen genomes | 0.824 |
+| Leave-One-Species-Out | 0.406 |
 
-These findings highlight the importance of defining which biological entity is meant to be unseen and verifying that the train/test split actually enforces that separation. A random split and an evaluation involving genuinely unseen biological entities do not measure the same kind of generalization.
+The results show:
+
+- Random row-level evaluation produced an accuracy of **0.824**.
+- Holding out species–antibiotic combinations reduced accuracy to **0.628**, a decrease of 19.6 percentage points.
+- Holding out individual genomes resulted in an accuracy of **0.824**, showing that genome-level separation alone does not necessarily eliminate overlap in species–antibiotic relationships.
+- Leave-One-Species-Out evaluation produced a reported pooled out-of-fold accuracy of **0.406**.
 
 ## What's in This Repository
 
 - Data preprocessing and feature construction using Species, Antibiotic, Antibiotic_Class, and Computational Method.
 - Four evaluation regimes implemented using stratified k-fold cross-validation and GroupKFold.
-- Split-integrity auditing to measure train/test overlap across different relationship types.
+- Split-integrity auditing to measure overlap between training and test sets across different relationship types.
 - Relationship-based majority-vote baselines using Species + Antibiotic and Genome + Antibiotic.
 - Feature ablation studies.
 - Model-seed robustness testing across 10 seeds.
@@ -43,8 +65,6 @@ These findings highlight the importance of defining which biological entity is m
 
 ### Models
 
-Four classifiers were evaluated:
-
 - Logistic Regression (C = 1.0)
 - Random Forest (300 trees)
 - Gradient Boosting (100 estimators, maximum depth 3)
@@ -52,23 +72,24 @@ Four classifiers were evaluated:
 
 ### Validation
 
-Five-fold stratified cross-validation and GroupKFold were used depending on the evaluation regime.
-
-Pooled out-of-fold accuracy was reported as the primary metric for the leave-one-species-out setting because the held-out folds were unbalanced.
+- Five-fold stratified cross-validation and GroupKFold were used depending on the evaluation regime.
+- Pooled out-of-fold accuracy was used as the primary metric for Leave-One-Species-Out evaluation because the held-out folds were unbalanced.
 
 ### Statistical Analysis
 
 - Bootstrap confidence intervals using 1,000 resamples.
-- Label-permutation significance tests using 200 permutations per evaluation regime.
+- Label-permutation significance testing using 200 permutations per evaluation regime.
 - SHAP-based feature importance.
 - Permutation feature importance.
 - Model-seed robustness testing across 10 seeds.
-- Feature ablation and label-conflict analyses.
+- Feature ablation and label-conflict analysis.
 - Split-integrity checks and relationship-based majority-vote baselines.
 
 ## Tools and Technologies
 
 - Python
+- Pandas
+- NumPy
 - Scikit-learn
 - XGBoost
 - SHAP
@@ -81,13 +102,16 @@ No patient-identifiable clinical data were used, and no new human or animal data
 
 ## Limitations
 
-- The dataset contains 801 labelled observations across five species, limiting the breadth of conclusions that can be drawn.
-- Results depend on the dataset composition and the evaluation strategy used.
+- The dataset contains 801 labelled observations across five bacterial species, limiting the breadth of conclusions that can be drawn.
+- Results depend on dataset composition and the evaluation strategy used.
 - Performance on the evaluated species does not establish generalization to all bacterial species, antibiotics, or clinical settings.
+- The recorded AMR phenotypes are derived from the available dataset and are not independent clinical validation.
 - Predictive accuracy alone does not establish clinical usefulness or readiness for deployment.
 
 ## Conclusion
 
-Evaluating AMR prediction models requires more than reporting a single accuracy score. The definition of an unseen observation determines what kind of generalization is being tested.
+Evaluating AMR prediction models requires more than reporting a single accuracy score.
 
-Random row-level splits can produce a different picture of model performance from splits that hold out species–antibiotic relationships or entire species. Explicitly defining the held-out biological entity and auditing train/test separation are essential for interpreting AMR prediction results.
+The definition of an unseen observation determines what kind of generalization is being tested. Random row-level splits, unseen species–antibiotic combinations, unseen genomes, and entirely unseen species represent different evaluation challenges.
+
+Clearly defining the held-out biological entity and verifying train/test separation are essential for interpreting machine-learning performance in antimicrobial resistance prediction.
